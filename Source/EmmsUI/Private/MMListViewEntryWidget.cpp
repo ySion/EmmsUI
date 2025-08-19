@@ -1,0 +1,47 @@
+#include "MMListViewEntryWidget.h"
+#include "Components/ListView.h"
+
+UObject* UMMListViewEntryWidget::GetListItem(const TSubclassOf<UObject>& ItemClass) const
+{
+	if (ItemClass == nullptr || ListItem == nullptr || !ListItem->IsA(ItemClass))
+		return nullptr;
+	return ListItem;
+}
+
+int UMMListViewEntryWidget::GetItemIndex() const
+{
+	if (ListItem == nullptr)
+		return -1;
+	if (UListView* ListView = Cast<UListView>(GetOwningListView()))
+		return ListView->GetIndexForItem(ListItem);
+	else
+		return -1;
+}
+
+bool UMMListViewEntryWidget::AS_IsListItemSelected() const
+{
+	return IsListItemSelected();
+}
+
+bool UMMListViewEntryWidget::AS_IsListItemExpanded() const
+{
+	return IsListItemExpanded();
+}
+
+void UMMListViewEntryWidget::OnRootWidgetChanged()
+{
+	if (UListView* ListView = Cast<UListView>(GetOwningListView()))
+		ListView->RequestRefresh();
+}
+
+void UMMListViewEntryWidget::NativeOnListItemObjectSet(UObject* ListItemObject)
+{
+	if (ListItemObject != ListItem)
+	{
+		ListItem = ListItemObject;
+		IUserObjectListEntry::NativeOnListItemObjectSet(ListItemObject);
+
+		bAllowDraw = (ListItem != nullptr);
+		CallDraw(0.f);
+	}
+}
