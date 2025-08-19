@@ -371,6 +371,8 @@ void UEmmsWidgetHelpers::SetToolTipText(FEmmsWidgetHandle* Widget, const FString
 FEmmsWidgetHandle UEmmsWidgetHelpers::EditableTextBox(FString& OutTextValue)
 {
 	FEmmsWidgetHandle Widget = UEmmsStatics::AddWidget(UEditableTextBox::StaticClass());
+	if (Widget.Element == nullptr)
+		return Widget;
 
 	auto& AttributeState = Widget.Element->Attributes.FindOrAdd(Attr_UEditableTextBox_Text);
 
@@ -385,6 +387,8 @@ FEmmsWidgetHandle UEmmsWidgetHelpers::EditableTextBox(FString& OutTextValue)
 FEmmsWidgetHandle UEmmsWidgetHelpers::SpinBox(double& OutValue)
 {
 	FEmmsWidgetHandle Widget = UEmmsStatics::AddWidget(USpinBox::StaticClass());
+	if (Widget.Element == nullptr)
+		return Widget;
 
 	{
 		float NewValue = (float)OutValue;
@@ -400,6 +404,8 @@ FEmmsWidgetHandle UEmmsWidgetHelpers::SpinBox(double& OutValue)
 FEmmsWidgetHandle UEmmsWidgetHelpers::SpinBox_Constrained(double& OutValue, float MinValue, float MaxValue, float Delta)
 {
 	FEmmsWidgetHandle Widget = SpinBox(OutValue);
+	if (Widget.Element == nullptr)
+		return Widget;
 
 	if (float* Value = GetPartialPendingAttribute<float>(Widget, Attr_USpinBox_MinValue))
 		*Value = MinValue;
@@ -419,6 +425,8 @@ FEmmsWidgetHandle UEmmsWidgetHelpers::SpinBox_Constrained(double& OutValue, floa
 FEmmsWidgetHandle UEmmsWidgetHelpers::Slider(double& OutValue, float MinValue, float MaxValue)
 {
 	FEmmsWidgetHandle Widget = UEmmsStatics::AddWidget(USlider::StaticClass());
+	if (Widget.Element == nullptr)
+		return Widget;
 
 	{
 		float NewValue = (float)OutValue;
@@ -440,6 +448,8 @@ FEmmsWidgetHandle UEmmsWidgetHelpers::Slider(double& OutValue, float MinValue, f
 FEmmsWidgetHandle UEmmsWidgetHelpers::CheckBox(bool& OutValue)
 {
 	FEmmsWidgetHandle Widget = UEmmsStatics::AddWidget(UCheckBox::StaticClass());
+	if (Widget.Element == nullptr)
+		return Widget;
 
 	{
 		ECheckBoxState NewValue = OutValue ? ECheckBoxState::Checked : ECheckBoxState::Unchecked;
@@ -455,6 +465,8 @@ FEmmsWidgetHandle UEmmsWidgetHelpers::CheckBox(bool& OutValue)
 FEmmsWidgetHandle UEmmsWidgetHelpers::CheckBox_Label(bool& OutValue, const FString& Label)
 {
 	FEmmsWidgetHandle Widget = CheckBox(OutValue);
+	if (Widget.Element == nullptr)
+		return Widget;
 	UEmmsStatics::BeginExistingWidget(Widget);
 	UEmmsStatics::WithinWidget(USizeBox::StaticClass());
 	UEmmsSlotHelpers::Padding_HorizVert(4, 0);
