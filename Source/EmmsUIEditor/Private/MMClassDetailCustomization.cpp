@@ -319,6 +319,39 @@ void UMMClassDetailCustomization::NotifyPropertyModified(UObject* Object, FName 
 	Object->PostEditChangeProperty(PropertyChangedEvent);
 }
 
+void UMMClassDetailCustomization::AddExternalObject(FName CategoryName, UObject* Object, bool bHideRootObjectNode)
+{
+	if (ActiveDetailBuilder == nullptr)
+		return;
+
+	FAddPropertyParams Params;
+	Params.HideRootObjectNode(bHideRootObjectNode);
+
+	IDetailCategoryBuilder& Category = GetCategory(CategoryName);
+	Category.AddExternalObjects(
+		TArray<UObject*>{Object},
+		EPropertyLocation::Default,
+		Params
+	);
+}
+
+void UMMClassDetailCustomization::AddExternalObjectProperty(FName CategoryName, UObject* Object, FName PropertyName)
+{
+	if (ActiveDetailBuilder == nullptr)
+		return;
+
+	FAddPropertyParams Params;
+	Params.ForceShowProperty();
+
+	IDetailCategoryBuilder& Category = GetCategory(CategoryName);
+	Category.AddExternalObjectProperty(
+		TArray<UObject*>{Object},
+		PropertyName,
+		EPropertyLocation::Default,
+		Params
+	);
+}
+
 void UMMClassDetailCustomization::ForceRefresh()
 {
 	if (!IsValid(this) || IsUnreachable())

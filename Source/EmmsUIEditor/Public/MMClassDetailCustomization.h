@@ -136,8 +136,14 @@ public:
 	UFUNCTION(ScriptCallable)
 	FMMDetailImmediateProperty AddImmediateCustom(FName CategoryName, const FString& FilterString = TEXT(""), bool bAdvancedDisplay = false);
 
-	UFUNCTION(ScriptCallable, Category = "Visualization")
+	UFUNCTION(ScriptCallable)
 	void NotifyPropertyModified(UObject* Object, FName PropertyName);
+
+	UFUNCTION(ScriptCallable)
+	void AddExternalObject(FName CategoryName, UObject* Object, bool bHideRootObjectNode = true);
+
+	UFUNCTION(ScriptCallable)
+	void AddExternalObjectProperty(FName CategoryName, UObject* Object, FName PropertyName);
 
 	UFUNCTION(ScriptCallable)
 	void ForceRefresh();
