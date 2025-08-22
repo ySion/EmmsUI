@@ -305,6 +305,7 @@ FEmmsWidgetHandle UEmmsStatics::BeginDrawViewportOverlay(const UObject* WorldCon
 	FEmmsViewportOverlay* Overlay = EmmsSubsys->ViewportOverlays.Find(OverlayId);
 	if (Overlay != nullptr)
 	{
+		Overlay->LastDrawUITickCounter = EmmsSubsys->UITickCounter;
 		return BeginDraw(Overlay->Widget, RootPanel);
 	}
 	else
@@ -312,6 +313,7 @@ FEmmsWidgetHandle UEmmsStatics::BeginDrawViewportOverlay(const UObject* WorldCon
 		FEmmsViewportOverlay NewOverlay;
 		NewOverlay.Widget = NewObject<UMMWidget>(GetTransientPackage(), NAME_None);
 		NewOverlay.Widget->DefaultRootPanel = UVerticalBox::StaticClass();
+		NewOverlay.LastDrawUITickCounter = EmmsSubsys->UITickCounter;
 
 		if (UGameViewportClient* GameViewport = World->GetGameViewport())
 		{

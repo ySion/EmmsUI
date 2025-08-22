@@ -18,6 +18,9 @@ struct FEmmsViewportOverlay
 	UPROPERTY()
 	TWeakObjectPtr<UGameViewportClient> ViewportClient;
 
+	UPROPERTY()
+	uint64 LastDrawUITickCounter = 0;
+
 #if WITH_EDITOR
 	TWeakPtr<IAssetViewport> AssetViewport;
 #endif
@@ -36,6 +39,9 @@ struct FEmmsPendingAssetLoad
 
 	UPROPERTY()
 	uint64 LastRequestedFrameCounter = 0;
+
+	UPROPERTY()
+	uint64 LastRequestedUITickCounter = 0;
 };
 
 UCLASS()
@@ -50,6 +56,8 @@ public:
 
 	UPROPERTY()
 	TMap<FString, FEmmsPendingAssetLoad> PendingLoads;
+
+	uint64 UITickCounter = 0;
 
 	void RemoveOverlayWidget(FEmmsViewportOverlay Overlay);
 	UObject* AsyncLoadAsset(const FString& AssetPath);

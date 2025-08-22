@@ -29,6 +29,7 @@ UObject* UEmmsUISubsystem::AsyncLoadAsset(const FString& AssetPath)
 {
 	FEmmsPendingAssetLoad& PendingAsset = PendingLoads.FindOrAdd(AssetPath);
 	PendingAsset.LastRequestedFrameCounter = GFrameCounter;
+	PendingAsset.LastRequestedUITickCounter = UITickCounter;
 
 	if (!PendingAsset.bLoading)
 	{
@@ -81,7 +82,7 @@ void UEmmsUISubsystem::Tick(float DeltaTime)
 
 	for (auto It = ViewportOverlays.CreateIterator(); It; ++It)
 	{
-		if (It->Value.Widget == nullptr || It->Value.Widget->LastDrawFrameCounter < GFrameCounter-2)
+		if (It->Value.Widget == nullptr || It->Value.LastDrawUITickCounter < UITickCounter-2)
 		{
 			RemoveOverlayWidget(It->Value);
 			It.RemoveCurrent();
@@ -90,11 +91,13 @@ void UEmmsUISubsystem::Tick(float DeltaTime)
 
 	for (auto It = PendingLoads.CreateIterator(); It; ++It)
 	{
-		if (It->Value.LastRequestedFrameCounter < GFrameCounter - 10)
+		if (It->Value.LastRequestedUITickCounter < UITickCounter - 10)
 		{
 			It.RemoveCurrent();
 		}
 	}
+
+	UITickCounter += 1;
 }
 
 void UEmmsUISubsystem::Deinitialize()
