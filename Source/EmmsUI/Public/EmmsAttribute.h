@@ -6,6 +6,7 @@
 enum class EEmmsAttributeType
 {
 	Property,
+	BitField,
 };
 
 struct EMMSUI_API FEmmsAttributeValue
@@ -40,8 +41,6 @@ struct EMMSUI_API FEmmsAttributeSpecification
 
 	TFunction<void(FEmmsAttributeSpecification* Spec, void* Container, void* Value)> AssignValueFunction;
 	TFunction<void(FEmmsAttributeSpecification* Spec, void* Container)> ResetToDefaultFunction;
-
-	void* GetRawValuePtr(void* Container) const;
 
 	FName GetAttributeName() const;
 	bool IsCompatibleWithContainer(UObject* Object) const;

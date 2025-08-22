@@ -24,6 +24,12 @@ FEmmsAttributeSpecification* GetOrCreateAttributeSpecification(FProperty* Proper
 		Spec->AttributeProperty = Property;
 		Spec->ScriptUsage = PropUsage;
 
+		if (FBoolProperty* BoolProp = CastField<FBoolProperty>(Property))
+		{
+			if (!BoolProp->IsNativeBool())
+				Spec->Type = EEmmsAttributeType::BitField;
+		}
+
 		// When a read-only property is changed, the slate widget needs to be rebuilt,
 		// since the UMG widget doesn't expect this to change at runtime.
 		if (Property->HasAnyPropertyFlags(CPF_BlueprintReadOnly) || !Property->HasAnyPropertyFlags(CPF_BlueprintVisible))
