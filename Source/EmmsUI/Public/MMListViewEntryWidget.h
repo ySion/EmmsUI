@@ -34,6 +34,12 @@ public:
 	UFUNCTION(ScriptCallable, meta = (ScriptName = "IsListItemExpanded"))
 	bool AS_IsListItemExpanded() const;
 
+	UFUNCTION(ScriptCallable, meta = (ScriptName = "SetListItemExpanded"))
+	void AS_SetListItemExpanded(bool bExpanded);
+
+	UFUNCTION(ScriptCallable, meta = (ScriptName = "GetOwningListView"))
+	UListViewBase* AS_GetOwningListView() const;
+
 	virtual void NativeOnListItemObjectSet(UObject* ListItemObject) override;
 	virtual void OnRootWidgetChanged() override;
 };

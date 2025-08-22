@@ -1,5 +1,6 @@
 #include "MMListViewEntryWidget.h"
 #include "Components/ListView.h"
+#include "Components/TreeView.h"
 
 UObject* UMMListViewEntryWidget::GetListItem(const TSubclassOf<UObject>& ItemClass) const
 {
@@ -26,6 +27,17 @@ bool UMMListViewEntryWidget::AS_IsListItemSelected() const
 bool UMMListViewEntryWidget::AS_IsListItemExpanded() const
 {
 	return IsListItemExpanded();
+}
+
+void UMMListViewEntryWidget::AS_SetListItemExpanded(bool bExpanded)
+{
+	if (UTreeView* TreeView = Cast<UTreeView>(GetOwningListView()))
+		TreeView->SetItemExpansion(ListItem, bExpanded);
+}
+
+UListViewBase* UMMListViewEntryWidget::AS_GetOwningListView() const
+{
+	return GetOwningListView();
 }
 
 void UMMListViewEntryWidget::OnRootWidgetChanged()
