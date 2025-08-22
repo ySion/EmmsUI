@@ -117,8 +117,6 @@ AS_FORCE_LINK const FAngelscriptBinds::FBind Bind_EmmsWidgets((int32)FAngelscrip
 				FAngelscriptTypeUsage PropUsage = FAngelscriptTypeUsage::FromProperty(Property);
 				if (!PropUsage.IsValid())
 					continue;
-				if (!PropUsage.CanBeTemplateSubType())
-					continue;
 
 				FMulticastDelegateProperty* EventProperty = CastField<FMulticastDelegateProperty>(Property);
 				FDelegateProperty* DelegateProperty = CastField<FDelegateProperty>(Property);
