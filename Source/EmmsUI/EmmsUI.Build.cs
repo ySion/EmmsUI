@@ -19,6 +19,7 @@ namespace UnrealBuildTool.Rules
 				"SlateCore",
 				"InputCore",
 				"UMG",
+                "DeveloperSettings"
 			});
 
 			if(Target.bCompileAgainstEditor)
