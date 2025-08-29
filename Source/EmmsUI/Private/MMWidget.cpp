@@ -86,7 +86,7 @@ void UMMWidget::CallDraw(float InDeltaTime)
 	if (!bAllowDraw)
 		return;
 
-	if (GetClass()->bIsScriptClass || ExternalDrawFunction)
+	if (GetClass()->bIsScriptClass || GetClass()->HasAllClassFlags(CLASS_CompiledFromBlueprint) || ExternalDrawFunction)
 	{
 		UEmmsStatics::BeginDraw(this, DefaultRootPanel);
 
