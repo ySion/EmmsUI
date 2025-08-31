@@ -29,6 +29,7 @@ public:
 
 	bool bHasDrawnThisFrame = false;
 	bool bLayoutChanged = false;
+    bool bShouldDrawThisFrame = true;
 	uint64 LastDrawFrameCounter = 0;
 	uint64 DrawCount = 0;
 
@@ -38,8 +39,14 @@ public:
 	// Whether drawing the widget is allowed at the moment
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "MM Widget")
 	bool bAllowDraw = true;
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "MM Widget")
+    bool bPassiveMode = false;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "MM Widget")
 	TSubclassOf<UPanelWidget> DefaultRootPanel;
+
+    // rendering next frame;
+    UFUNCTION(BlueprintCallable)
+    void MarkDirtyForPassiveMode() { bShouldDrawThisFrame = true; }
 
 	static void AddReferencedObjects(UObject* InThis, FReferenceCollector& Collector);
 	virtual void BeginDestroy() override;

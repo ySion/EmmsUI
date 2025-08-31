@@ -101,7 +101,18 @@ void UMMWidget::CallDraw(float InDeltaTime)
 void UMMWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 {
 	Super::NativeTick(MyGeometry, InDeltaTime);
-	TickDraw(InDeltaTime);
+    if (bPassiveMode)
+    {
+        if (bShouldDrawThisFrame)
+        {
+            TickDraw(InDeltaTime);
+            bShouldDrawThisFrame = false;
+        }
+    }
+    else
+    {
+        TickDraw(InDeltaTime);
+    }
 }
 
 void UMMWidget::TickDraw(float DeltaTime)
