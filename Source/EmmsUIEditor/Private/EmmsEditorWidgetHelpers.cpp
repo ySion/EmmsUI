@@ -6,6 +6,8 @@
 #include "DetailLayoutBuilder.h"
 #include "DetailCategoryBuilder.h"
 
+#include "Components/AssetThumbnailWidget.h"
+
 #include "Modules/ModuleManager.h"
 #include "Components/DetailsView.h"
 #include "Widgets/Layout/SBox.h"
@@ -91,6 +93,14 @@ AS_FORCE_LINK const FAngelscriptBinds::FBind Bind_EmmsEditorWidgetHelpers((int32
 		mmUDetailsView_.Method("void SetStruct(?& StructRef, const FString& HeaderTitle) const", &UEmmsEditorWidgetHelpers::SetDetailsViewStruct);
 		FAngelscriptBinds::SetPreviousBindIsEditorOnly(true);
 	}
+
+	{
+		FAngelscriptBinds::FNamespace ns("mm");
+		FAngelscriptBinds::BindGlobalFunction("mm<UAssetThumbnailWidget> AssetThumbnail(UObject Object, int32 Resolution = 64)", &UEmmsEditorWidgetHelpers::AssetThumbnailFromObject);
+		FAngelscriptBinds::SetPreviousBindIsEditorOnly(true);
+		FAngelscriptBinds::BindGlobalFunction("mm<UAssetThumbnailWidget> AssetThumbnail(const FAssetData& AssetData, int32 Resolution = 64)", &UEmmsEditorWidgetHelpers::AssetThumbnailFromAssetData);
+		FAngelscriptBinds::SetPreviousBindIsEditorOnly(true);
+	}
 });
 
 TSharedRef<IDetailCustomization> FEmmsEditableInstancedStructDetailCustomization::MakeInstance()
@@ -136,4 +146,74 @@ void FEmmsEditableInstancedStructDetailCustomization::CustomizeDetails(IDetailLa
 
 	Category.InitiallyCollapsed(false);
 	Category.AddCustomBuilder(DataDetails);
+}
+
+FEmmsWidgetHandle UEmmsEditorWidgetHelpers::AssetThumbnailFromObject(UObject* Object, int32 Resolution)
+{
+    FEmmsWidgetHandle Widget = UEmmsStatics::AddWidget(UAssetThumbnailWidget::StaticClass());
+    if (Widget.Element == nullptr)
+        return Widget;
+
+    UAssetThumbnailWidget* ThumbnailWidget = Cast<UAssetThumbnailWidget>(Widget.Element->UMGWidget);
+    if (ThumbnailWidget)
+    {
+        if (IsAssetThumbnailWidgetChanged(ThumbnailWidget, FAssetData(Object), Resolution))
+        {
+            const FIntPoint DesiredRes(Resolution, Resolution);
+            ThumbnailWidget->SetResolution(DesiredRes);
+            ThumbnailWidget->SetAssetByObject(Object);
+        }
+    }
+    return Widget;
+}
+
+FEmmsWidgetHandle UEmmsEditorWidgetHelpers::AssetThumbnailFromAssetData(const FAssetData& AssetData, int32 Resolution)
+{
+	FEmmsWidgetHandle Widget = UEmmsStatics::AddWidget(UAssetThumbnailWidget::StaticClass());
+	if (Widget.Element == nullptr)
+		return Widget;
+
+	UAssetThumbnailWidget* ThumbnailWidget = Cast<UAssetThumbnailWidget>(Widget.Element->UMGWidget);
+	if (ThumbnailWidget)
+	{
+	        if (IsAssetThumbnailWidgetChanged(ThumbnailWidget, AssetData, Resolution))
+	        {
+	            const FIntPoint DesiredRes(Resolution, Resolution);
+	            ThumbnailWidget->SetResolution(DesiredRes);
+	            ThumbnailWidget->SetAsset(AssetData);
+	        }
+	}
+	return Widget;
+}
+
+bool UEmmsEditorWidgetHelpers::IsAssetThumbnailWidgetChanged(UAssetThumbnailWidget* ThumbnailWidget, const FAssetData& NewAssetData, int32 NewResolution)
+{
+    if (ThumbnailWidget == nullptr)
+        return true;
+    
+    const FIntPoint NewRes(NewResolution, NewResolution);
+    const bool bResChanged = ThumbnailWidget->GetResolution() != NewRes;
+    
+    if (bResChanged)
+    {
+        return true;
+    }
+    
+    // Access the private AssetToShow property via reflection
+    static FStructProperty* AssetProp = FindFProperty<FStructProperty>(UAssetThumbnailWidget::StaticClass(), FName("AssetToShow"));
+
+    ensureMsgf(AssetProp != nullptr, TEXT("UAssetThumbnailWidget::AssetToShow not found. Class may have changed."));
+
+    if (AssetProp)
+    {
+        const FAssetData* CurrentAsset = AssetProp->ContainerPtrToValuePtr<FAssetData>(ThumbnailWidget);
+
+        if (CurrentAsset)
+        {
+            bool bAssetChanged = *CurrentAsset != NewAssetData;
+            return bAssetChanged;
+        }
+    }
+    
+    return true;
 }

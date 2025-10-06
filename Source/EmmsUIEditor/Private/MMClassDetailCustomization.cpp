@@ -33,6 +33,7 @@ void UMMClassDetailCustomization::CustomizeDetails(IDetailLayoutBuilder& DetailB
 			ObjectsBeingCustomized.Add(Ptr.Get());
 	}
 
+	FEditorScriptExecutionGuard ScopeAllowScript;
 	BP_CustomizeDetails();
 
 	ActiveDetailBuilder = nullptr;
@@ -51,8 +52,12 @@ void UMMClassDetailCustomization::Tick(float DeltaTime)
 	if (!IsValid(this) || IsUnreachable())
 		return;
 
-	if (GetClass()->ScriptTypePtr != nullptr)
+	if (GetClass()->ScriptTypePtr != nullptr) 
+	{
+		FEditorScriptExecutionGuard ScopeAllowScript;
 		BP_Tick(DeltaTime);
+	}
+		
 }
 
 TStatId UMMClassDetailCustomization::GetStatId() const
@@ -91,6 +96,16 @@ void UMMClassDetailCustomization::EditCategory(FName CategoryName, const FString
 	IDetailCategoryBuilder& Category = ActiveDetailBuilder->EditCategory(CategoryName, FText::FromString(CategoryDisplayName), (ECategoryPriority::Type)CategoryType);
 	ActiveCategories.Add(CategoryName, &Category);
 }
+
+void UMMClassDetailCustomization::SetCategorySortOrder(FName CategoryName, int32 SortOrder)
+{
+    if (ActiveDetailBuilder == nullptr)
+        return;
+    
+    IDetailCategoryBuilder& Category = GetCategory(CategoryName);
+    Category.SetSortOrder(SortOrder);
+}
+
 
 void UMMClassDetailCustomization::AddAllCategoryDefaultProperties(FName CategoryName, bool bSimpleProperties, bool bAdvancedProperties)
 {
@@ -236,7 +251,7 @@ UMMWidget* UMMClassDetailCustomization::AddImmediateRow(FName CategoryName, cons
 		return nullptr;
 
 	UMMWidget* ImmWidget = NewObject<UMMWidget>(GetTransientPackage());
-	UsedImmediateWidgets.Add(ImmWidget);
+	UsedImmediateWidgets.Add(ImmWidget);	
 
 	IDetailCategoryBuilder& Category = GetCategory(CategoryName);
 	FDetailWidgetRow& Row = Category.AddCustomRow(FText::FromString(FilterString), bAdvancedDisplay);
